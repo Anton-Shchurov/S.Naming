@@ -3,20 +3,50 @@ from PIL import Image
 import data_base as db
 import constants as ct
 
+# Получение списка полей из файла Excel
+dataframe = db.url_connect(ct.URL)
+
+# Преобразование всех столбцов DataFrame в строковый тип
+dataframe = dataframe.astype(str)
+
+# Получение названий всех объектов
+project_names = dataframe["Название объекта"].unique().tolist()
+
+# Переменне, в которые записывается выбор пользователя
+selected_project = None
+selected_project_short_name = None
+selected_phase = None
+selected_stage = list()
+selected_building = list()
+selected_discipline = None
+selected_set = None
+
 # Создание класса списка с чек-боксами
 class ScrollableCheckBoxFrame(ctk.CTkScrollableFrame):
     def __init__(self, master, item_list, command=None, **kwargs):
         super().__init__(master, **kwargs)
         self.command = command
         self.checkbox_list = []
+        self.checked_items = []  # список для сохранения выбранных элементов
         for item in item_list:
             self.add_item(item)
 
     def add_item(self, item):
         checkbox = ctk.CTkCheckBox(self, text=item)
-        checkbox.configure(command=self.command)  # Привязываем команду к чекбоксу
+        # Обновление command для включения логики сохранения состояния
+        checkbox.configure(command=lambda cb=checkbox: self.on_checkbox_select(cb))
         checkbox.grid(row=len(self.checkbox_list), column=0, pady=(0, 0))
         self.checkbox_list.append(checkbox)
+
+    def on_checkbox_select(self, checkbox):
+        if checkbox.get():
+            if checkbox.cget("text") not in self.checked_items:
+                self.checked_items.append(checkbox.cget("text"))
+        else:
+            if checkbox.cget("text") in self.checked_items:
+                self.checked_items.remove(checkbox.cget("text"))
+        if self.command:
+            self.command()
 
     def update_items(self, items):
         for checkbox in self.checkbox_list:
@@ -26,11 +56,22 @@ class ScrollableCheckBoxFrame(ctk.CTkScrollableFrame):
             self.add_item(item)
             
     def get_checked_items(self):
-        return [checkbox.cget("text") for checkbox in self.checkbox_list if checkbox.get() == 1]
+        return self.checked_items
 
-def update_phase_options(selected_project):
+def project_choice(selected_project_value):
+    
+    # Обеспечиваем доступ к глобальной переменной
+    global selected_project
+    global selected_project_short_name
+    
+    # Обновляем переменную последним выбором пользователя
+    selected_project = selected_project_value
+    
     # Фильтрация DataFrame по выбранному проекту
     filtered_df = dataframe[dataframe['Название объекта'] == selected_project]
+    
+    
+    selected_project_short_name = filtered_df['Краткое наименование'].unique().tolist()
     
     # Получение уникальных очередей для выбранного проекта
     phases = filtered_df['Очередь'].unique().tolist()
@@ -38,7 +79,14 @@ def update_phase_options(selected_project):
     # Обновление выпадающего списка очередей
     phase_option_menu.configure(values=phases)
 
-def update_stage_options(selected_phase):
+def phase_choice(selected_phase_value):
+    
+    # Обеспечиваем доступ к глобальной переменной
+    global selected_phase  
+    
+    # Обновляем переменную последним выбором пользователя
+    selected_phase = selected_phase_value  
+    
     # Фильтрация DataFrame по выбранной очереди и выбранному проекту
     selected_project = project_option_menu.get()
     filtered_df = dataframe[(dataframe['Очередь'] == selected_phase) & (dataframe['Название объекта'] == selected_project)]
@@ -49,7 +97,11 @@ def update_stage_options(selected_phase):
     # Обновление чекбоксов этапов
     stage_checkboxes.update_items(stages)
     
-def update_objects_by_selected_stages():
+def stage_choice():
+    
+    # Обеспечиваем доступ к глобальной переменной
+    global selected_stage
+    
     # Получаем список выбранных этапов
     selected_stages = stage_checkboxes.get_checked_items()
     
@@ -66,18 +118,34 @@ def update_objects_by_selected_stages():
     
     # Обновление списка объектов
     building_checkboxes.update_items(objects)
- 
-# Получение списка полей из файла Excel
-dataframe = db.url_connect(ct.URL)
+    
+    # Запись выбора пользователя в переменную
+    selected_stage = stage_checkboxes.get_checked_items()
+    
+def building_choice():
+    
+    # Обеспечиваем доступ к глобальной переменной
+    global selected_building
+    
+    # Запись выбора пользователя в переменную
+    selected_building = building_checkboxes.get_checked_items()
+    
+def discipline_choice(selected_discipline_value):
+    
+    # Обеспечиваем доступ к глобальной переменной
+    global selected_discipline
+    
+    # Обновляем переменную последним выбором пользователя
+    selected_discipline = selected_discipline_value
+    
+def set_choice(selected_set_value):
+    
+    # Обеспечиваем доступ к глобальной переменной
+    global selected_set
+    
+    # Обновляем переменную последним выбором пользователя
+    selected_set = selected_set_value
 
-# Преобразование всех столбцов DataFrame в строковый тип
-dataframe = dataframe.astype(str)
-
-project_names = dataframe["Название объекта"].unique().tolist()
-short_project_names = dataframe["Краткое наименование"].unique().tolist()
-phase_numbers = dataframe["Очередь"].unique()
-stage_numbers = dataframe["Этап"].unique().tolist()
-building_numbers = dataframe["Дом"].unique().tolist()
 
 # Настройки цветовой схемы программы
 ctk.set_appearance_mode("light")
@@ -163,23 +231,23 @@ file_names_label = ctk.CTkLabel(master=app, text="Названия файлов"
 file_names_label.grid(row=3, column=0, columnspan=2, sticky=ct.STICKY_UP, padx=0, pady=0)
 
 # Выпадающие списки
-project_option_menu = ctk.CTkOptionMenu(master=app, values=project_names, font=ct.FONT, command=update_phase_options)
+project_option_menu = ctk.CTkOptionMenu(master=app, values=project_names, font=ct.FONT, command=project_choice)
 project_option_menu.grid(row=1, column=0, sticky=ct.STICKY_UP, padx=ct.PADX_OPTMENU, pady=ct.PADY_OPTMENU)
 
-phase_option_menu = ctk.CTkOptionMenu(master=app, values=["Выберите проект"], font=ct.FONT, command=update_stage_options)
+phase_option_menu = ctk.CTkOptionMenu(master=app, values=["Выберите проект"], font=ct.FONT, command=phase_choice)
 phase_option_menu.grid(row=1, column=1, sticky=ct.STICKY_UP, padx=ct.PADX_OPTMENU, pady=ct.PADY_OPTMENU)
 
-discipline_option_menu = ctk.CTkOptionMenu(master=app, values=ct.DISCIPLINE, font=ct.FONT)
+discipline_option_menu = ctk.CTkOptionMenu(master=app, values=ct.DISCIPLINE, font=ct.FONT, command=discipline_choice)
 discipline_option_menu.grid(row=2, column=0, sticky=ct.STICKY_UP, padx=ct.PADX_OPTMENU, pady=ct.PADY_OPTMENU)
 
-set_option_menu = ctk.CTkOptionMenu(master=app, values=ct.SET, font=ct.FONT)
+set_option_menu = ctk.CTkOptionMenu(master=app, values=ct.SET, font=ct.FONT, command=set_choice)
 set_option_menu.grid(row=2, column=1, sticky=ct.STICKY_UP, padx=ct.PADX_OPTMENU, pady=ct.PADY_OPTMENU)
 
 # Чекбоксы в выпадающих списках
-stage_checkboxes = ScrollableCheckBoxFrame(master=app, item_list=["Выберите очередь"], command=update_objects_by_selected_stages)
+stage_checkboxes = ScrollableCheckBoxFrame(master=app, item_list=["Выберите очередь"], command=stage_choice)
 stage_checkboxes.grid(row=1, column=2, rowspan=2, sticky=ct.STICKY_ALL, padx=ct.PADX_CHECKBOX, pady=ct.PADY_CHECKBOX)
 
-building_checkboxes = ScrollableCheckBoxFrame(master=app, item_list=["Выберите этап"], command=None)
+building_checkboxes = ScrollableCheckBoxFrame(master=app, item_list=["Выберите этап"], command=building_choice)
 building_checkboxes.grid(row=1, column=3, rowspan=2, sticky=ct.STICKY_ALL, padx=ct.PADX_CHECKBOX, pady=ct.PADY_CHECKBOX)
 
 # Кнопка "Сбросить выбор"
