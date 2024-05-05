@@ -21,6 +21,9 @@ selected_building = list()
 selected_discipline = None
 selected_set = None
 
+# Приветственный текст
+hello_text = "Привет! Это программа поможет тебе получить названия файлов и элементов Civil 3D. Начни с выбора проекта, затем выбери очередь, этап, объект, раздел и комплект. Названия сформируются только если все поля выбраны. Если ты передумаешь и изменишь выбор, названия изменятся автоматически. Если решишь сбросить выбор, для этого есть кнопка внизу окна программы. Наименования формируются в соответствии с правилами, описанными на Confluence. Удачи и хорошего дня!"
+
 # Создание класса списка с чек-боксами
 class ScrollableCheckBoxFrame(ctk.CTkScrollableFrame):
     def __init__(self, master, item_list, command=None, **kwargs):
@@ -78,6 +81,8 @@ def project_choice(selected_project_value):
     
     # Обновление выпадающего списка очередей
     phase_option_menu.configure(values=phases)
+    
+    generate_file_names()
 
 def phase_choice(selected_phase_value):
     
@@ -96,6 +101,8 @@ def phase_choice(selected_phase_value):
     
     # Обновление чекбоксов этапов
     stage_checkboxes.update_items(stages)
+    
+    generate_file_names()
     
 def stage_choice():
     
@@ -122,6 +129,8 @@ def stage_choice():
     # Запись выбора пользователя в переменную
     selected_stage = stage_checkboxes.get_checked_items()
     
+    generate_file_names()
+    
 def building_choice():
     
     # Обеспечиваем доступ к глобальной переменной
@@ -129,6 +138,8 @@ def building_choice():
     
     # Запись выбора пользователя в переменную
     selected_building = building_checkboxes.get_checked_items()
+    
+    generate_file_names()
     
 def discipline_choice(selected_discipline_value):
     
@@ -138,6 +149,8 @@ def discipline_choice(selected_discipline_value):
     # Обновляем переменную последним выбором пользователя
     selected_discipline = selected_discipline_value
     
+    generate_file_names()
+    
 def set_choice(selected_set_value):
     
     # Обеспечиваем доступ к глобальной переменной
@@ -145,7 +158,64 @@ def set_choice(selected_set_value):
     
     # Обновляем переменную последним выбором пользователя
     selected_set = selected_set_value
+    
+    generate_file_names()
 
+def generate_file_names():
+    # Проверка, что необходимые переменные заданы и списки не пусты
+    if (selected_project_short_name and selected_phase and selected_discipline and selected_set and
+            selected_stage and selected_building):
+        # Создание строки с именем файла
+        file_name_parts = [
+            selected_project_short_name[0],
+            selected_phase,
+            "#".join(selected_stage),
+            "#".join(selected_building),
+            selected_discipline,
+            selected_set
+        ]
+        file_name = "_".join(file_name_parts)
+        
+        # Отображение имени файла в текстовом поле
+        file_name_textbox.configure(state='normal')
+        file_name_textbox.delete('1.0', 'end')  # Очистка текущего текста
+        file_name_textbox.insert('1.0', file_name)  # Вставка нового имени файла
+        file_name_textbox.configure(state='disabled')
+
+def generate_element_names():
+    pass
+
+def reset_selection():
+    global selected_project, selected_project_short_name, selected_phase
+    global selected_stage, selected_building, selected_discipline, selected_set
+    
+    # Сброс переменных
+    selected_project = None
+    selected_project_short_name = None
+    selected_phase = None
+    selected_stage = []
+    selected_building = []
+    selected_discipline = None
+    selected_set = None
+
+    # Сброс интерфейсных компонентов
+    project_option_menu.set("Выберите проект")
+    phase_option_menu.set("Выберите проект")
+    discipline_option_menu.set("Выберите раздел")
+    set_option_menu.set("Выберите комплект")
+    stage_checkboxes.update_items(["Выберите очередь"])
+    building_checkboxes.update_items(["Выберите этап"])
+
+    # Очистка текстовых полей
+    file_name_textbox.configure(state='normal')
+    file_name_textbox.delete('1.0', 'end')
+    file_name_textbox.insert('1.0', "")
+    file_name_textbox.configure(state='disabled')
+
+    element_name_textbox.configure(state='normal')
+    element_name_textbox.delete('1.0', 'end')
+    element_name_textbox.insert('1.0', "")
+    element_name_textbox.configure(state='disabled')
 
 # Настройки цветовой схемы программы
 ctk.set_appearance_mode("light")
@@ -175,7 +245,7 @@ message_textbox = ctk.CTkTextbox(master=app,
                                  wrap=ct.WRAP,
                                  )
 message_textbox.grid(row=0, column=0, columnspan=3, sticky=ct.STICKY_ALL, padx=(100, 40), pady=(25, 10))
-message_textbox.insert('1.0', text='Hello, world!')
+message_textbox.insert('1.0', text=hello_text)
 message_textbox.configure(state='disabled')
 
 # Текстовое поле для отображения названий файлов
@@ -251,7 +321,7 @@ building_checkboxes = ScrollableCheckBoxFrame(master=app, item_list=["Выбер
 building_checkboxes.grid(row=1, column=3, rowspan=2, sticky=ct.STICKY_ALL, padx=ct.PADX_CHECKBOX, pady=ct.PADY_CHECKBOX)
 
 # Кнопка "Сбросить выбор"
-reset_button = ctk.CTkButton(master=app, text="Сбросить выбор", font=('CoFo Sans Medium', 24), command=None)
+reset_button = ctk.CTkButton(master=app, text="Сбросить выбор", font=('CoFo Sans Medium', 24), command=reset_selection)
 reset_button.grid(row=5, column=1, columnspan=2, sticky="EW", padx=150, pady=(10, 20))
 
 # Запуск приложения
