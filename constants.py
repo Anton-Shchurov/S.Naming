@@ -1,8 +1,8 @@
-# Константы
-# Путь к Excel файлу с таблицей распределения
-URL = "https://globalteamgf.sharepoint.com/:x:/s/msteams_49ef7c/EfHszYdVup5NmP-jNO6FWokBRZdFTaB1hiJN32jG0577lA?download=1"
+# Constants
+# URL to the Excel file with the distribution table
+URL = "https://globalteamgf-my.sharepoint.com/:x:/g/personal/a_shchurov_glassfordglobal_rs/EVUH6ebvB6pFg4w-8n-x2Y4B3dtIefUJVxjHJ86jmSpisQ?download=1"
 
-# Константы для customtkinter
+# Constants for customtkinter
 FONT = ('CoFo Sans Medium', 18)
 BORDER_WIDTH = 4
 CORNER_RADIUS = 15
@@ -21,51 +21,51 @@ PADY_CHECKBOX = 40
 STICKY_UP = 'NEW'
 STICKY_ALL = 'NSEW'
 
-# Константы для формирования наименований
-# Поле "Секция"
+# Constants for name generation
+# Field "Section"
 SECTION = "00"
 
-# Поле "Раздел"
-DISCIPLINE  = [
-    'ИИ',
-    'МП',
-    'ГП',
-    'НК',
-    'ДК',
-    'НВ',
-    'ТС',
-    'ЭС',
-    'ЭН'
+# Field "Discipline"
+DISCIPLINE = [
+    'ES',  # Engineering Surveys
+    'MP',  # Master Plan
+    'LD',  # Land Development
+    'SW',  # Sewage
+    'SD',  # Storm Drainage
+    'WS',  # Water Supply
+    'HN',  # Heating Networks
+    'PS',  # Power Supply
+    'LT'   # Lighting
 ]
 
-# Поле "Комплект"
+# Field "Set"
 SET = [
-    'НИС',
-    'ПЗУ',
-    'ГП1',
-    'ГП2.1',
-    'ГП2.2'
+    'EEN',     # External Engineering Networks
+    'LPP',     # Land Plot Plan
+    'LD1',     # Land Development 1
+    'LD2.1',   # Land Development 2.1
+    'LD2.2'    # Land Development 2.2
 ]
 
-# Поле "Описание" для файлов модели
+# Field "Description" for model files
 MODEL_NAME = [
-    'М-ОСН',
-    'М-ДМН',
-    'М-МАФ',
-    'М-ОЗЛ',
-    'М-ПОР',
-    'М-СПИС',
-    'М-УДС'
+    'M-MAIN',  # Main
+    'M-DISM',  # Dismantling
+    'M-SAF',   # Small Architectural Forms
+    'M-GRN',   # Greening
+    'M-RP',    # Relief Plan
+    'M-CPE',   # Combined Plan of Engineering Networks
+    'M-SRN'    # Street Road Network
 ]
 
-# Поле "Описание" для файлов листов
+# Field "Description" for sheet files
 SHEET_NAME = [
-    'Л-СИТ',
-    'Л-СПОЗУ',
-    'Л-МАФ',
-    'Л-ОЗЛ',
-    'Л-ПОР',
-    'Л-ПЗМ',
-    'Л-СПИС',
-    'Л-КДО'
+    'S-SP',    # Situation Plan
+    'S-SPOT',  # SPOT Plan
+    'S-SAF',   # Small Architectural Forms
+    'S-GRN',   # Greening
+    'S-RP',    # Relief Plan
+    'S-LDP',   # Land Plot Development Plan
+    'S-CPE',   # Combined Plan of Engineering Networks
+    'S-PS'     # Pavement Structure
 ]
