@@ -1,5 +1,5 @@
 # S.Naming - Naming Generator for Civil 3D Files
-#### Video Demo:  [URL HERE]
+
 #### Description:
 
 S.Naming is a sophisticated program designed to streamline the generation of names for Civil 3D files and elements. It offers a user-friendly interface for selecting various parameters and ensures that names are generated in accordance with specified rules.
