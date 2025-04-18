@@ -487,8 +487,9 @@ def main():
     element_name_textbox.grid(row=3, column=2, columnspan=2, rowspan=2, sticky=ct.STICKY_ALL, padx=40, pady=(40, 10))
 
     # Insert image of Quokka 
-    kwokka_image = ctk.CTkImage(Image.open("C:/Users/Shchurov/Хранилище/Документы/02_Программирование/CS50_Python/Final Project/Kwokka.png"), size=(171, 150))
-    kwokka_image_label = ctk.CTkLabel(master=app, text="", image=kwokka_image)
+    img_path = Path(__file__).resolve().parent / "Kwokka.png"
+    kwokka_image = ctk.CTkImage(Image.open(img_path), size=(171, 150))
+    kwokka_image_label = ctk.CTkLabel(app, text="", image=kwokka_image)
     kwokka_image_label.grid(row=0, column=3, padx=(0, 80), pady=ct.PADY_LABEL)
     
     # Labels for various fields
