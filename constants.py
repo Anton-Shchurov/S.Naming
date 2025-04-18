@@ -1,8 +1,11 @@
 # Constants
 # URL to the Excel file with the distribution table
-URL = "https://globalteamgf-my.sharepoint.com/:x:/g/personal/a_shchurov_glassfordglobal_rs/EVUH6ebvB6pFg4w-8n-x2Y4B3dtIefUJVxjHJ86jmSpisQ?download=1"
+import os
 
-# Constants for customtkinter
+# It's recommended to store sensitive URLs in environment variables
+URL = os.getenv("SHEET_URL", "")
+
+# Constants for customtkinter UI settings
 FONT = ('CoFo Sans Medium', 18)
 BORDER_WIDTH = 4
 CORNER_RADIUS = 15
@@ -21,7 +24,7 @@ PADY_CHECKBOX = 40
 STICKY_UP = 'NEW'
 STICKY_ALL = 'NSEW'
 
-# Constants for name generation
+# Constants for name generation logic
 # Field "Section"
 SECTION = "00"
 
